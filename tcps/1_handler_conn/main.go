@@ -21,6 +21,7 @@ const (
 var (
 	Sers         = NewValues() //默认服务
 	Lock         sync.RWMutex
+	ChClose      = make(chan int)
 	ErrCloseSent = fmt.Errorf("service: close sent")
 )
 
@@ -95,7 +96,7 @@ func (va *ValueSer) TcpServer(val chan Infos) {
 			continue
 		}
 
-		fmt.Println("Set info", info)
+		fmt.Println("PUT info", info)
 		for kk, ff := range info.Cmd {
 			if kk == "POP" {
 				value := va.PopOut(ff[0])
@@ -107,11 +108,11 @@ func (va *ValueSer) TcpServer(val chan Infos) {
 				value := va.PutIn(k, v)
 				info.Result <- fmt.Sprintf("%v", value)
 			} else if kk == CloseMessage {
-
-				va.Service.Close()
+				fmt.Printf("close action:%v\n", kk)
+				va.Running = false
 				os.Exit(1)
 			} else {
-				info.Result <- "INVALID COMMAND " + kk + "\n"
+				info.Result <- "Not Allowed Action. " + kk + "\n"
 			}
 
 		}
@@ -128,7 +129,7 @@ type Infos struct {
 }
 
 /*
-使用者的指令处理函数，负责把结果写回链接中
+使用者的指令处理函数，负责把结果写回链接中,在执行关闭指令时退出该客户端。
 */
 func handler(infos chan Infos, cn net.Conn) {
 
@@ -153,6 +154,9 @@ func handler(infos chan Infos, cn net.Conn) {
 		}
 
 		io.WriteString(cn, <-result+"\n")
+		if fs[0] == CloseMessage {
+			break
+		}
 	}
 
 }
@@ -176,6 +180,7 @@ func Start() {
 
 		go handler(infos, cn)
 	}
+	return
 
 }
 
