@@ -13,7 +13,7 @@ var (
 	wg       = sync.WaitGroup{}
 	closech  = make(chan int)
 	msgGroup = []Message{}
-	addr     = "localhost:6379"
+	addr     = "192.168.30.131:6379"
 )
 
 type Message struct {
@@ -73,7 +73,7 @@ func ConnTcp() {
 	wg.Wait()
 
 	for i, v := range msgGroup {
-		fmt.Printf("i:%v, v:%v\n", i, v)
+		fmt.Printf("msg of:%v, txt:%v\n", i, v)
 
 	}
 
