@@ -1,0 +1,2 @@
+{"level":"info","time":"2023-01-06 20:13:31","caller":"inits/main.go:57","msg":"Shutdown Server ... \n","configs":"inits-main[test]"}
+{"level":"fatal","time":"2023-01-06 20:13:31","caller":"inits/main.go:46","msg":"http: Server closed","configs":"inits-main[test]"}

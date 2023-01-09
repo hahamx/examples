@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+    
+<head> 
+     
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Msg</title>
+</head>
+
+<body>
+  Welcome to ws client.
+  <style type="text/css">
+    /* reset.css */
+   
+    /* HTML5 display-role reset for older browsers */
+    article, aside, details, figcaption, figure,
+    footer, header, hgroup, menu, nav, section { display: block; }
+    body { line-height: 1; }
+    ol, ul { list-style: none; }
+    blockquote, q { quotes: none; }
+    blockquote:before, blockquote:after,
+    q:before, q:after { content: ''; content: none; }
+    table { border-collapse: collapse; border-spacing: 0; }
+
+    /* ansible-cmdb */
+    *, body { font-family: sans-serif; font-weight: lighter; }
+    a { text-decoration: none; }
+    b { font-weight: bold; }
+    p { margin-bottom: 1em; }
+     
+    body connect { color: #005c9d; }
+    body content { color: #005c9d; }
+    body ol { color: #FF0000; }
+    body ul { color: #FF9000; }
+     
+    #hosts .error { color: #FF0000; }
+  </style>
+    
+ 
+
+  <p id="connect">
+
+  </p>
+     <ol id="content">
+
+     </ol>
+ 
+     <ul id="msg">
+
+     </ul>
+
+
+<!-- <script  src="./jquery-2.2.4.js"></script> -->
+<script>
+
+  let addr = 'ws://localhost:3002/message';
+  let ws = new WebSocket(addr);
+  let searchMsg = ""; 
+  
+  
+  console.log("Webscoket connection")
+   
+//   ws.send("hi,service, this is chrome.")
+
+  // ws.onopen = () => {
+  //   console.log("new client connected.");
+  // }
+
+  // ws.onmessage = (msg) => {
+  //   console.log("Server message:", String(msg.data));
+  // }
+
+  // ws.onclose = () => {
+  //   console.log("Server disconneted");
+  // }
+  //connection opened
+  ws.addEventListener('open', function (event) {
+    document.getElementById("connect").innerText = "connected to server:" + addr
+  });
+
+  //listen for messages
+  ws.addEventListener('message', function (event) {
+    console.log("Message from server", event.data);
+    var body = document.getElementById("content")
+    var list = document.createElement("p")
+
+    list.innerHTML = event.data
+
+    body.appendChild(list)
+  });
+
+  ws.onmessage = (msg) => {
+    var suff = "new message from "
+    console.log(suff + addr)
+    var body = document.getElementById("msg")
+    var list = document.createElement("p")
+
+    list.innerHTML = suff + addr + " : " + msg.data
+
+    body.appendChild(list)
+    // ws.send("control", "ping")
+  }
+  
+  window.ws = ws
+  
+
+    
+</script> 
+</div>
+</body>
+</html>
