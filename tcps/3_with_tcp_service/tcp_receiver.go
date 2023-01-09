@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"sync"
@@ -13,6 +14,7 @@ var (
 	wg       = sync.WaitGroup{}
 	closech  = make(chan int)
 	msgGroup = []Message{}
+	logs     = log.New(os.Stdout, "INFO-", 13)
 	addr     = "192.168.30.131:6379"
 )
 
@@ -57,19 +59,48 @@ func GetName(cn net.Conn) {
 
 		if i >= 2 {
 			wg.Done()
-			closech <- i
+			// closech <- i
 			return
 		}
 	}
 
 }
 
+// 查询订阅时返回两个，第一个是长度，第二个是内容, 接受20次
+func SubScriPtion(cn net.Conn) {
+	subcmd := "SUBSCRIBE boards:zoo:visits \n"
+	cn.Write([]byte(subcmd))
+	scanner := bufio.NewScanner(cn)
+	i := 0
+	for scanner.Scan() {
+		txt := scanner.Text()
+		ids := fmt.Sprintf("M:%v", time.Now().UnixMilli())
+		nsg := Message{Id: ids, Text: txt}
+
+		if len(txt) >= 25 {
+			i++
+			logs.Printf("msg length:%v msg:%#v\n", len(txt), nsg)
+		}
+
+		msgGroup = append(msgGroup)
+
+		if i >= 200 {
+			wg.Done()
+			closech <- i
+			return
+		}
+	}
+}
+
 // 设置和获取, 查看结果并退出
 func ConnTcp() {
 	cn := retNewConn()
-	SetName(cn)
+	// SetName(cn)
+	fmt.Printf("start redis of:%v, conn local:%v\n", addr, cn.LocalAddr())
+
 	wg.Add(1)
-	go GetName(cn)
+	// go GetName(cn)
+	go SubScriPtion(cn)
 	wg.Wait()
 
 	for i, v := range msgGroup {
@@ -89,4 +120,5 @@ func ConnTcp() {
 
 func main() {
 	ConnTcp()
+
 }
