@@ -1,32 +1,12 @@
-
-import sys
 import time
- 
 from concurrent.futures import Future
 from threading import Thread, Lock
 from asyncio import wait_for, wrap_future, get_event_loop
 import asyncio
 from time import sleep
  
-
-def from_coroutine():
-
-    return sys._getframe(2).f_code.co_flags & 0x380
-
-
-def which_side():
-    if from_coroutine():
-        print("White")
-    else:
-        print("Black")
-
-
-def spam():
-    which_side()
-
-
-async def aspam():
-    which_side()
+ 
+from type_check import from_coroutine
 
 
 class Queuey():
